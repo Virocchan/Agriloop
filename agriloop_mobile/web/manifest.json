@@ -1,0 +1,56 @@
+{
+    "name": "AgriLoop — Smart Community Composting",
+    "short_name": "AgriLoop",
+    "start_url": ".",
+    "scope": ".",
+    "display": "standalone",
+    "display_override": ["standalone", "minimal-ui"],
+    "background_color": "#0D1511",
+    "theme_color": "#22C55E",
+    "description": "Divert food waste from landfill, earn Green Points, and feed the township's own landscaping with the compost you make.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "categories": ["utilities", "lifestyle", "environment"],
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Make a deposit",
+            "short_name": "Deposit",
+            "description": "Scan a smart bin and drop your food waste",
+            "url": "/?tab=deposit",
+            "icons": [{ "src": "icons/Icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Green Points",
+            "short_name": "Rewards",
+            "description": "Redeem your Green Points for partner vouchers",
+            "url": "/?tab=rewards",
+            "icons": [{ "src": "icons/Icon-192.png", "sizes": "192x192" }]
+        }
+    ]
+}

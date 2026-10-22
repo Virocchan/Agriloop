@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AgriLoop — Smart Community Composting Ecosystem</title>
+  <meta name="description"
+    content="AgriLoop transforms residential organic waste into community park nourishment with IoT Bokashi smart bins, AI contamination checks, and local merchant rewards.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- jsQR library for live device camera QR code detection across all browsers -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+</head>
+
+<body>
+  <!-- Global App Container / Device Simulator Shell -->
+  <div id="app-environment" class="device-view-mode">
+
+    <!-- Top Companion Desktop Bar -->
+    <header class="companion-bar">
+      <div class="brand-group">
+        <div class="brand-logo-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M12 2a10 10 0 0 0-7.07 17.07L12 22l7.07-2.93A10 10 0 0 0 12 2z"></path>
+            <path d="M12 6v6l4 2"></path>
+            <path d="M7 14c2-2 4-2 6 0 2 2 4 2 6 0"></path>
+          </svg>
+        </div>
+        <div>
+          <div class="brand-title">AgriLoop <span class="brand-partner">× Sime Darby Communities</span></div>
+          <div class="brand-sub">Smart Bokashi Waste Diversion & Community Circularity</div>
+        </div>
+      </div>
+
+      <!-- Quick Role Switcher Pill -->
+      <div class="role-switcher-container">
+        <span class="role-label">Active Role:</span>
+        <div class="role-pill-group" role="tablist">
+          <button class="role-btn active" data-role="resident" id="role-btn-resident">
+            <span class="role-icon">🏡</span> Resident
+          </button>
+          <button class="role-btn" data-role="merchant" id="role-btn-merchant">
+            <span class="role-icon">🛍️</span> Merchant
+          </button>
+          <button class="role-btn" data-role="operator" id="role-btn-operator">
+            <span class="role-icon">🛠️</span> Operator <span class="badge-dot" id="operator-alert-dot"></span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Device Frame & Hardware Blueprint Toggles -->
+      <div class="companion-actions">
+        <button class="action-outline-btn" id="btn-show-test-qr" title="Show scannable test QR codes for camera verification">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+          Test QR Code
+        </button>
+        <button class="action-outline-btn" id="btn-hardware-drawer" title="Inspect Smart Bin Hardware & Telemetry">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="4" width="16" height="16" rx="2" />
+            <rect x="9" y="9" width="6" height="6" />
+            <line x1="9" y1="1" x2="9" y2="4" />
+            <line x1="15" y1="1" x2="15" y2="4" />
+            <line x1="9" y1="20" x2="9" y2="23" />
+            <line x1="15" y1="20" x2="15" y2="23" />
+            <line x1="20" y1="9" x2="23" y2="9" />
+            <line x1="20" y1="14" x2="23" y2="14" />
+            <line x1="1" y1="9" x2="4" y2="9" />
+            <line x1="1" y1="14" x2="4" y2="14" />
+          </svg>
+          Hardware & IoT Spec
+        </button>
+        <button class="view-toggle-btn" id="btn-toggle-frame" title="Toggle Mobile Phone Frame vs Full Canvas">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="3" />
+            <line x1="12" y1="18" x2="12" y2="18.01" />
+          </svg>
+          <span id="frame-toggle-text">Full View</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Simulator Stage -->
+    <main class="simulator-stage">
+
+      <!-- Phone Mockup Wrapper -->
+      <div class="phone-frame" id="phone-frame">
+        <!-- Physical Phone Elements -->
+        <div class="phone-notch">
+          <div class="speaker"></div>
+          <div class="camera-lens"></div>
+        </div>
+
+        <div class="phone-screen" id="phone-screen">
+
+          <!-- Status Bar -->
+          <div class="status-bar">
+            <span class="time" id="status-time">09:41</span>
+            <div class="status-icons">
+              <span class="signal-icon">●●●●</span>
+              <span class="wifi-icon">Wi-Fi</span>
+              <span class="battery-icon">98% 🔋</span>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- 1. RESIDENT ROLE INTERFACE                    -->
+          <!-- ============================================== -->
+          <div class="role-view active-role-view" id="view-resident">
+
+            <!-- In-App Top Header -->
+            <div class="resident-header">
+              <div class="user-chip">
+                <div class="user-avatar" id="res-avatar">NL</div>
+                <div class="user-meta">
+                  <span class="user-greeting">Welcome back,</span>
+                  <strong class="user-name" id="res-nickname">Norah Lee</strong>
+                </div>
+              </div>
+              <div class="header-right-badges">
+                <div class="township-tag" id="res-township-tag">
+                  <span class="dot-green"></span> Elmina Valley · 12-03
+                </div>
+                <button class="inbox-bell-btn" id="btn-open-inbox" aria-label="Notifications">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                  </svg>
+                  <span class="notification-count" id="inbox-badge-count">2</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Tab Content Viewport -->
+            <div class="tab-viewport" id="resident-viewport">
+
+              <!-- TAB 1: HOME -->
+              <section class="tab-page active-tab-page" id="tab-res-home">
+                <!-- Points & Streak Hero Card -->
+                <div class="hero-impact-card">
+                  <div class="hero-top">
+                    <div>
+                      <span class="stat-caption">Available Reward Balance</span>
+                      <div class="points-display">
+                        <span class="points-val" id="res-points-display">1,450</span>
+                        <span class="points-suffix">pts</span>
+                        <span class="points-rm-tag">≈ RM 7.25</span>
+                      </div>
+                    </div>
+                    <div class="streak-badge">
+                      <span class="fire-icon">🔥</span>
+                      <div class="streak-details">
+                        <span class="streak-num" id="res-streak-weeks">4</span>
+                        <span class="streak-sub">Wk Streak</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Quick Stats Grid -->
+                  <div class="impact-metrics-row">
+                    <div class="metric-pill">
+                      <span class="metric-icon">⚖️</span>
+                      <div>
+                        <div class="metric-val" id="res-kg-diverted">18.4 kg</div>
+                        <div class="metric-sub">Diverted Total</div>
+                      </div>
+                    </div>
+                    <div class="metric-pill">
+                      <span class="metric-icon">🌱</span>
+                      <div>
+                        <div class="metric-val" id="res-co2-avoided">46.0 kg</div>
+                        <div class="metric-sub">CO₂e Avoided <span class="info-tooltip"
+                            title="Calculation factor: 1 kg food waste diverted from anaerobic landfill avoids 2.5 kg CO₂e greenhouse gas emissions (Ref: IPCC & US EPA WARM Food Waste Factor).">ⓘ</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Nearest Bin Live Status Card -->
+                <div class="card nearest-bin-card" id="card-nearest-bin">
+                  <div class="card-header-clean">
+                    <div class="card-title-row">
+                      <div class="bin-indicator-pulse online"></div>
+                      <h2 class="card-h2">Nearest Smart Bin</h2>
+                    </div>
+                    <span class="bin-id-pill" id="nearest-bin-id">Bin A01 · Ground Foyer</span>
+                  </div>
+                  <div class="bin-status-body">
+                    <div class="bin-thumb-wrapper">
+                      <img src="assets/smart_bin.jpg" alt="AgriLoop Smart Bokashi Bin" class="bin-thumb-img">
+                      <span class="live-pill">LIVE MQTT</span>
+                    </div>
+                    <div class="bin-live-details">
+                      <div class="status-badge available" id="nearest-bin-status-badge">Available · Ready</div>
+                      <div class="detail-line">
+                        <span>Fill Level:</span>
+                        <div class="fill-bar-wrapper">
+                          <div class="fill-bar-fill" id="nearest-bin-fill-bar" style="width: 42%;"></div>
+                        </div>
+                        <strong id="nearest-bin-fill-pct">42%</strong>
+                      </div>
+                      <div class="detail-sub-grid">
+                        <div><span>Distance:</span> <strong>35 m</strong></div>
+                        <div><span>Internal Temp:</span> <strong id="nearest-bin-temp">31.2°C</strong></div>
+                      </div>
+                    </div>
+                  </div>
+                  <button class="primary-scan-action-btn" id="btn-home-quick-deposit">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2.5">
+                      <rect x="3" y="3" width="7" height="7" />
+                      <rect x="14" y="3" width="7" height="7" />
+                      <rect x="14" y="14" width="7" height="7" />
+                      <rect x="3" y="14" width="7" height="7" />
+                    </svg>
+                    Scan Bin QR & Deposit
+                  </button>
+                </div>
+
+                <!-- Community Bokashi Progress Tile -->
+                <div class="card community-goal-card">
+                  <div class="card-header-clean">
+                    <div class="card-title-row">
+                      <span class="card-icon">🌿</span>
+                      <h2 class="card-h2">October Community Compost</h2>
+                    </div>
+                    <span class="badge-text" id="compost-progress-text">62 / 100 kg</span>
+                  </div>
+                  <div class="compost-progress-bar-bg">
+                    <div class="compost-progress-bar-fill" id="compost-progress-bar-fill" style="width: 62%;"></div>
+                  </div>
+                  <p class="community-caption">
+                    <strong>62 kg</strong> of fermented Bokashi pre-compost cured and returned to <em>Elmina Valley
+                      Community Planters</em>! 🌸
+                  </p>
+                </div>
+
+                <!-- Quick Guides & Tips Carousel -->
+                <div class="quick-tips-banner">
+                  <div class="tip-icon">💡</div>
+                  <div class="tip-content">
+                    <strong>Bokashi Reminder</strong>
+                    <span>Meat trimmings, cooked leftovers & dairy are accepted! Just avoid single-use plastics & large
+                      bones.</span>
+                  </div>
+                </div>
+              </section>
+
+              <!-- TAB 2: DEPOSIT (SCANNER & SIMULATOR) -->
+              <section class="tab-page" id="tab-res-deposit">
+
+                <!-- Deposit Workflow State 1: Scan QR View -->
+                <div class="deposit-flow-state active-flow-state" id="flow-scan-view">
+                  <div class="scanner-header">
+                    <h2 class="flow-title">Scan Bin QR Code</h2>
+                    <p class="flow-subtitle">Point camera at the rotating 30s security QR on the bin's front TFT screen
+                    </p>
+                  </div>
+
+                  <!-- Camera Viewfinder Box -->
+                  <div class="camera-viewfinder" id="resident-viewfinder-box">
+                    <video id="resident-live-camera" class="live-camera-feed" autoplay playsinline muted></video>
+                    <canvas id="resident-qr-canvas" style="display:none;"></canvas>
+
+                    <!-- Camera Permission Prompt (shown if permission needed or camera stopped) -->
+                    <div class="camera-permission-prompt" id="resident-cam-prompt" style="display:none;">
+                      <div class="cam-prompt-icon">📷</div>
+                      <div class="cam-prompt-title">Device Camera Ready</div>
+                      <div class="cam-prompt-sub">Click to start your device webcam / phone camera</div>
+                      <button class="cam-action-btn" id="btn-request-resident-cam">Start Device Camera</button>
+                    </div>
+
+                    <div class="scan-target-frame">
+                      <div class="laser-scanner-line"></div>
+                      <div class="corner-marker top-left"></div>
+                      <div class="corner-marker top-right"></div>
+                      <div class="corner-marker bottom-left"></div>
+                      <div class="corner-marker bottom-right"></div>
+                      <div class="qr-target-preview" id="qr-target-preview">
+                        <div class="qr-mock-matrix">
+                          <svg viewBox="0 0 100 100" class="qr-code-svg">
+                            <rect width="100" height="100" fill="#ffffff" rx="8" />
+                            <rect x="10" y="10" width="26" height="26" fill="#182e23" />
+                            <rect x="15" y="15" width="16" height="16" fill="#ffffff" />
+                            <rect x="18" y="18" width="10" height="10" fill="#182e23" />
+                            <rect x="64" y="10" width="26" height="26" fill="#182e23" />
+                            <rect x="69" y="15" width="16" height="16" fill="#ffffff" />
+                            <rect x="72" y="18" width="10" height="10" fill="#182e23" />
+                            <rect x="10" y="64" width="26" height="26" fill="#182e23" />
+                            <rect x="15" y="69" width="16" height="16" fill="#ffffff" />
+                            <rect x="18" y="72" width="10" height="10" fill="#182e23" />
+                            <circle cx="50" cy="50" r="8" fill="#1bb56f" />
+                          </svg>
+                        </div>
+                        <div class="rotating-nonce-caption">
+                          <span class="live-dot-pulse"></span> Nonce: <span id="mock-qr-nonce">8F3A-9D22</span>
+                          (Rotating in 18s)
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Camera Active Floating Pill & Controls -->
+                    <div class="cam-status-overlay">
+                      <button class="cam-pill-btn" id="btn-toggle-resident-cam" title="Toggle Camera">
+                        <span class="cam-dot-live"></span> <span id="resident-cam-label">Device Camera Active</span>
+                      </button>
+                      <button class="cam-pill-icon-btn" id="btn-flip-resident-cam" title="Switch Camera (Front/Back)">
+                        🔄 Flip
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Quick Simulation Buttons for Demo -->
+                  <div class="scan-simulation-bar">
+                    <span class="sim-guide-label">Interactive Demo Triggers:</span>
+                    <div class="sim-btn-row">
+                      <button class="sim-trigger-btn success-trigger" id="btn-sim-clean-scan">
+                        <span>🍏 Clean Deposit</span> (0.65 kg Fruit & Coffee)
+                      </button>
+                      <button class="sim-trigger-btn warning-trigger" id="btn-sim-contam-scan">
+                        <span>⚠️ Contaminated</span> (Plastic Fork & Bag)
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Accepted Items Checklist Collapsible -->
+                  <div class="card checklist-card">
+                    <div class="checklist-header" id="checklist-toggle">
+                      <span class="card-icon">📋</span>
+                      <strong>What goes into the Bokashi bin?</strong>
+                      <span class="chevron-icon">▼</span>
+                    </div>
+                    <div class="checklist-content open" id="checklist-body">
+                      <div class="checklist-columns">
+                        <div class="check-col accepted">
+                          <h4>✅ Accepted</h4>
+                          <ul>
+                            <li>Fruit & vegetable peels</li>
+                            <li>Cooked food scraps & rice</li>
+                            <li>Coffee grounds & tea leaves</li>
+                            <li>Meat, fish, soft poultry bones</li>
+                            <li>Eggshells & bread crusts</li>
+                          </ul>
+                        </div>
+                        <div class="check-col rejected">
+                          <h4>❌ Prohibited</h4>
+                          <ul>
+                            <li>Plastic bags & cling wrap</li>
+                            <li>Takeout cutlery & cups</li>
+                            <li>Large hard bones (beef/lamb)</li>
+                            <li>Excessive soup / pure liquids</li>
+                            <li>Metal, glass, paper towels</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Deposit Workflow State 2: Unlocking & Lid Open Countdown -->
+                <div class="deposit-flow-state" id="flow-unlock-view">
+                  <div class="unlock-banner">
+                    <div class="pulse-ring-container">
+                      <div class="pulse-ring"></div>
+                      <div class="unlock-icon-badge" id="unlock-solenoid-state">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                          stroke-width="2.5">
+                          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                          <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                        </svg>
+                      </div>
+                    </div>
+                    <h3 class="unlock-title" id="unlock-headline">Connecting to Bin A01...</h3>
+                    <p class="unlock-sub" id="unlock-subtext">MQTT Handshake & Session Cryptography Verified</p>
+                  </div>
+
+                  <!-- Solenoid 30s Countdown Display -->
+                  <div class="timer-countdown-box">
+                    <div class="timer-circle">
+                      <span class="timer-seconds" id="unlock-timer-sec">30</span>
+                      <span class="timer-unit">SEC</span>
+                    </div>
+                    <div class="timer-desc">
+                      <strong>Lid Solenoid Unlatched</strong>
+                      <span>Open lid, deposit food waste, and close firmly. Scale auto-settles when lid shuts.</span>
+                    </div>
+                  </div>
+
+                  <!-- Interactive Action inside Unlocked State -->
+                  <div class="lid-sim-action-box">
+                    <div class="weight-live-readout">
+                      <span>Live HX711 Sensor:</span>
+                      <strong id="live-weight-counter">8,420 g</strong>
+                    </div>
+                    <button class="primary-cta-btn" id="btn-sim-close-lid">
+                      <span class="btn-icon">📥</span> Close Lid & Record Deposit
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Deposit Workflow State 3: Settling & AI Vision Inspection -->
+                <div class="deposit-flow-state" id="flow-processing-view">
+                  <div class="processing-card">
+                    <div class="ai-processing-visual">
+                      <div class="loader-spinner"></div>
+                      <div class="ai-chip-tag">AI Contamination Check</div>
+                    </div>
+                    <h3>Settling Load Cell & Inspecting Waste</h3>
+                    <p class="processing-note">
+                      Reed switch engaged. Locking solenoid. Analyzing ESP32-CAM dual-frame snapshot via Gemini Vision
+                      API...
+                    </p>
+                    <div class="processing-step-list">
+                      <div class="step-item done">✓ Lid closed securely (Reed switch 0)</div>
+                      <div class="step-item done">✓ Weight stabilized (std dev < 3.2g)</div>
+                          <div class="step-item active">⟳ Running contamination vision classifier...</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Deposit Workflow State 4: Real-time Live Result -->
+                  <div class="deposit-flow-state" id="flow-result-view">
+                    <div class="result-card" id="deposit-result-card">
+
+                      <!-- Result Status Header -->
+                      <div class="result-header" id="result-status-header">
+                        <div class="result-icon-badge" id="result-icon-badge">🎉</div>
+                        <div>
+                          <h3 class="result-title" id="result-title">Deposit Recorded!</h3>
+                          <p class="result-time" id="result-timestamp">Today at 09:42 AM · Bin A01</p>
+                        </div>
+                      </div>
+
+                      <!-- Weight & Delta Metric -->
+                      <div class="result-weight-block">
+                        <div class="weight-delta-tag">
+                          <span class="delta-label">Net Waste Diverted</span>
+                          <div class="delta-val" id="result-net-weight">+0.65 kg</div>
+                        </div>
+                        <div class="weight-sub-row">
+                          <span>Before: <strong id="result-weight-before">8.42 kg</strong></span>
+                          <span>After: <strong id="result-weight-after">9.07 kg</strong></span>
+                        </div>
+                      </div>
+
+                      <!-- ESP32-CAM Snapshots Inspection Gallery -->
+                      <div class="camera-dual-inspection">
+                        <div class="inspection-title">
+                          <span>ESP32-CAM Snapshot & Vision Analysis</span>
+                          <span class="ai-confidence-pill" id="result-ai-confidence">98% Confidence</span>
+                        </div>
+                        <div class="snapshot-frame">
+                          <img src="assets/deposit_clean.jpg" alt="ESP32-CAM Deposit View" id="result-snapshot-img"
+                            class="result-snapshot-img">
+                          <!-- Dynamic AI Contamination Box overlay -->
+                          <div class="ai-bounding-box" id="result-ai-box" style="display: none;">
+                            <div class="bounding-tag">⚠️ Plastic detected</div>
+                          </div>
+                        </div>
+                        <div class="ai-result-verdict" id="result-ai-verdict">
+                          <span class="verdict-icon">✅</span>
+                          <span class="verdict-text">Clean organic waste. Free from non-compostable plastics.</span>
+                        </div>
+                      </div>
+
+                      <!-- Points Earned Card -->
+                      <div class="points-reward-summary" id="result-points-box">
+                        <div class="points-earned-left">
+                          <span class="pts-caption">Points Earned</span>
+                          <div class="pts-big-num" id="result-points-value">+72 pts</div>
+                        </div>
+                        <div class="pts-breakdown-right">
+                          <div>Base (100 pts/kg): <strong id="result-base-pts">+65 pts</strong></div>
+                          <div>Streak Bonus (+10%): <strong id="result-streak-pts">+7 pts</strong></div>
+                        </div>
+                      </div>
+
+                      <!-- Flagged Action / Dispute Notice -->
+                      <div class="dispute-box" id="result-dispute-box" style="display: none;">
+                        <p>Believe this flag was an AI misidentification? You can request a human operator review.</p>
+                        <button class="dispute-btn" id="btn-trigger-dispute">Request Operator Dispute Review</button>
+                      </div>
+
+                      <!-- Done Button -->
+                      <button class="primary-cta-btn" id="btn-result-finish">
+                        Return to Dashboard
+                      </button>
+                    </div>
+                  </div>
+
+              </section>
+
+              <!-- TAB 3: REWARDS & VOUCHERS -->
+              <section class="tab-page" id="tab-res-rewards">
+                <div class="rewards-top-hero">
+                  <div class="reward-balance-label">Your Points Balance</div>
+                  <div class="reward-balance-value">
+                    <span id="rewards-tab-points">1,450</span> <span class="pts-currency">pts</span>
+                  </div>
+                  <p class="reward-hint">1,000 pts = RM 5 voucher funded by community merchant partners</p>
+
+                  <!-- Switcher between Catalogue and My Vouchers -->
+                  <div class="sub-tab-pill-group">
+                    <button class="sub-tab-btn active" id="subtab-btn-catalog">Redeem Catalogue</button>
+                    <button class="sub-tab-btn" id="subtab-btn-myvouchers">My Vouchers (<span
+                        id="my-vouchers-count">1</span>)</button>
+                  </div>
+                </div>
+
+                <!-- SUBVIEW 1: VOUCHER CATALOGUE -->
+                <div class="rewards-subview active-subview" id="subview-catalog">
+                  <h3 class="section-title">Partner Merchant Vouchers</h3>
+                  <div class="vouchers-grid" id="vouchers-catalog-list">
+                    <!-- Dynamic Catalogue Cards -->
+                  </div>
+                </div>
+
+                <!-- SUBVIEW 2: MY VOUCHERS (ACTIVE & USED) -->
+                <div class="rewards-subview" id="subview-myvouchers">
+                  <h3 class="section-title">Active & Saved Vouchers</h3>
+                  <div class="my-vouchers-list" id="my-vouchers-container">
+                    <!-- Rendered active vouchers with signed QRs -->
+                  </div>
+                </div>
+              </section>
+
+              <!-- TAB 4: COMMUNITY & LEADERBOARD -->
+              <section class="tab-page" id="tab-res-community">
+                <div class="community-header-banner">
+                  <div class="banner-title-group">
+                    <h2>Community Impact Hub</h2>
+                    <p>Elmina Valley Block Challenge · October Cycle</p>
+                  </div>
+                </div>
+
+                <!-- Block vs Block Leaderboard Card -->
+                <div class="card leaderboard-card">
+                  <div class="card-header-clean">
+                    <h3 class="card-h2">🏆 Block Leaderboard</h3>
+                    <span class="cycle-pill">Ends in 8 Days</span>
+                  </div>
+                  <div class="leaderboard-list" id="block-leaderboard-list">
+                    <!-- Dynamic Blocks -->
+                  </div>
+                </div>
+
+                <!-- Resident Rank within Block -->
+                <div class="card my-block-rank-card">
+                  <div class="rank-badge">
+                    <span class="rank-pos">#4</span>
+                    <span class="rank-sub">in Block A</span>
+                  </div>
+                  <div class="rank-desc">
+                    <strong>You've diverted 18.4 kg this month!</strong>
+                    <span>Only 2.1 kg behind Unit 08-02 for the top 3 podium reward.</span>
+                  </div>
+                </div>
+
+                <!-- Active Weekly Challenges -->
+                <div class="card challenges-card">
+                  <h3 class="card-h2">🎯 Weekly Challenges</h3>
+                  <div class="challenge-item">
+                    <div class="challenge-icon">🔥</div>
+                    <div class="challenge-info">
+                      <div class="challenge-row">
+                        <strong>3-Day Composter</strong>
+                        <span class="challenge-reward">+50 pts</span>
+                      </div>
+                      <p>Deposit on 3 distinct days this week</p>
+                      <div class="challenge-bar-bg">
+                        <div class="challenge-bar-fill" style="width: 66%;"></div>
+                      </div>
+                      <span class="challenge-step">2 of 3 completed</span>
+                    </div>
+                  </div>
+
+                  <div class="challenge-item">
+                    <div class="challenge-icon">✨</div>
+                    <div class="challenge-info">
+                      <div class="challenge-row">
+                        <strong>Zero Contamination Hero</strong>
+                        <span class="challenge-reward">+80 pts</span>
+                      </div>
+                      <p>Achieve 5 consecutive clean deposits verified by AI</p>
+                      <div class="challenge-bar-bg">
+                        <div class="challenge-bar-fill" style="width: 80%;"></div>
+                      </div>
+                      <span class="challenge-step">4 of 5 clean</span>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <!-- TAB 5: PROFILE & SUPPORT -->
+              <section class="tab-page" id="tab-res-profile">
+                <!-- Profile Card -->
+                <div class="card profile-info-card">
+                  <div class="profile-avatar-large">NL</div>
+                  <div class="profile-text-group">
+                    <h2 class="profile-name" id="prof-user-nickname">Norah Lee</h2>
+                    <span class="profile-location">Sime Darby Elmina Valley · Unit 12-03</span>
+                    <span class="profile-code">Invite Code: <strong>ELM-9921</strong> (Verified)</span>
+                  </div>
+                </div>
+
+                <!-- Action Menu List -->
+                <div class="menu-group">
+                  <button class="menu-item-btn" id="btn-open-deposit-history">
+                    <span class="menu-icon">📜</span>
+                    <div class="menu-text">
+                      <strong>Deposit History & Points Ledger</strong>
+                      <span>Review past deposits, weights, and point credits</span>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                  </button>
+
+                  <button class="menu-item-btn" id="btn-open-accepted-guide">
+                    <span class="menu-icon">📗</span>
+                    <div class="menu-text">
+                      <strong>Bokashi Composting Guide 101</strong>
+                      <span>Airtight fermentation tips & accepted materials</span>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                  </button>
+
+                  <button class="menu-item-btn" id="btn-report-issue">
+                    <span class="menu-icon">🚨</span>
+                    <div class="menu-text">
+                      <strong>Report a Problem with Smart Bin</strong>
+                      <span>Bin full, smelly, latch jammed, or offline</span>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                  </button>
+
+                  <button class="menu-item-btn" id="btn-switch-account-sim">
+                    <span class="menu-icon">🔄</span>
+                    <div class="menu-text">
+                      <strong>Re-open Onboarding Setup</strong>
+                      <span>Switch township, block, unit, or nickname</span>
+                    </div>
+                    <span class="menu-arrow">›</span>
+                  </button>
+                </div>
+
+                <div class="privacy-note">
+                  🔒 <strong>Privacy Assurance:</strong> AgriLoop only stores your unit ID and nickname. No personal
+                  phone numbers or identification card data are shared on public leaderboards.
+                </div>
+              </section>
+
+            </div>
+
+            <!-- Bottom Resident Tab Bar -->
+            <nav class="bottom-tab-bar" aria-label="Main Navigation">
+              <button class="tab-nav-btn active" data-tab="tab-res-home">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                  <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <span>Home</span>
+              </button>
+              <button class="tab-nav-btn" data-tab="tab-res-deposit">
+                <div class="deposit-fab-circle">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                  </svg>
+                </div>
+                <span>Deposit</span>
+              </button>
+              <button class="tab-nav-btn" data-tab="tab-res-rewards">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="8" r="7"></circle>
+                  <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                </svg>
+                <span>Rewards</span>
+              </button>
+              <button class="tab-nav-btn" data-tab="tab-res-community">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span>Community</span>
+              </button>
+              <button class="tab-nav-btn" data-tab="tab-res-profile">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span>Profile</span>
+              </button>
+            </nav>
+
+          </div>
+
+          <!-- ============================================== -->
+          <!-- 2. MERCHANT ROLE INTERFACE                     -->
+          <!-- ============================================== -->
+          <div class="role-view" id="view-merchant">
+            <div class="merchant-header">
+              <div class="merchant-badge-group">
+                <div class="merchant-store-icon">🛒</div>
+                <div>
+                  <h2 class="merchant-title">Jaya Grocer · Elmina Branch</h2>
+                  <span class="merchant-status-tag">Authorized Partner Merchant</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="merchant-body">
+              <!-- Scanner Module for Voucher Redemption -->
+              <div class="card merchant-scanner-card">
+                <h3>Scan Resident Voucher QR</h3>
+                <p>Verify HMAC cryptographic signature & deduct voucher from community account</p>
+
+                <div class="merchant-viewfinder" id="merchant-viewfinder-box">
+                  <video id="merchant-live-camera" class="live-camera-feed" autoplay playsinline muted></video>
+                  <canvas id="merchant-qr-canvas" style="display:none;"></canvas>
+
+                  <!-- Camera Permission Prompt for Merchant -->
+                  <div class="camera-permission-prompt" id="merchant-cam-prompt" style="display:none;">
+                    <div class="cam-prompt-icon">📷</div>
+                    <div class="cam-prompt-title">Cashier Camera Ready</div>
+                    <div class="cam-prompt-sub">Allow camera access to scan customer vouchers</div>
+                    <button class="cam-action-btn" id="btn-request-merchant-cam">Start Cashier Camera</button>
+                  </div>
+
+                  <div class="laser-scanner-line"></div>
+                  <div class="merchant-scan-target" id="merchant-scan-target">
+                    <svg viewBox="0 0 100 100" class="qr-target-icon">
+                      <rect x="5" y="5" width="90" height="90" rx="10" fill="none" stroke="#22c55e" stroke-width="2"
+                        stroke-dasharray="8 6" />
+                    </svg>
+                    <span class="viewfinder-text">Align customer voucher QR</span>
+                  </div>
+                  <!-- Camera Floating Pill & Controls -->
+                  <div class="cam-status-overlay">
+                    <button class="cam-pill-btn" id="btn-toggle-merchant-cam" title="Toggle Camera">
+                      <span class="cam-dot-live"></span> <span id="merchant-cam-label">Device Camera Active</span>
+                    </button>
+                    <button class="cam-pill-icon-btn" id="btn-flip-merchant-cam" title="Switch Camera (Front/Back)">
+                      🔄 Flip
+                    </button>
+                  </div>
+                </div>
+
+                <div class="merchant-trigger-row">
+                  <button class="primary-scan-action-btn" id="btn-merchant-scan-demo">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                      <polyline points="14 2 14 8 20 8"></polyline>
+                      <line x1="16" y1="13" x2="8" y2="13"></line>
+                      <line x1="16" y1="17" x2="8" y2="17"></line>
+                      <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                    Simulate Customer Voucher Scan (RM 5.00)
+                  </button>
+                </div>
+              </div>
+
+              <!-- Today's Redemption Stats & Log -->
+              <div class="card merchant-stats-card">
+                <div class="card-header-clean">
+                  <h3 class="card-h2">Today's Redemptions</h3>
+                  <span class="badge-accent">RM 65.00 Total</span>
+                </div>
+                <div class="redemption-list" id="merchant-redemption-list">
+                  <!-- Dynamically populated redemptions -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- 3. OPERATOR ROLE INTERFACE                     -->
+          <!-- ============================================== -->
+          <div class="role-view" id="view-operator">
+            <div class="operator-header">
+              <div class="op-title-row">
+                <span class="op-icon">🛠️</span>
+                <div>
+                  <h2 class="op-title">Operator Control & Service Hub</h2>
+                  <span class="op-location">Sime Darby Elmina Cluster · 3 Bins Online</span>
+                </div>
+              </div>
+              <button class="op-emergency-unlock-btn" id="btn-remote-unlock-modal">
+                Remote Unlock
+              </button>
+            </div>
+
+            <!-- Operator View Sub-tabs -->
+            <div class="operator-subtabs">
+              <button class="op-tab-btn active" data-optab="optab-bins">Bins Fleet</button>
+              <button class="op-tab-btn" data-optab="optab-tasks">Tasks (<span id="op-task-count">3</span>)</button>
+              <button class="op-tab-btn" data-optab="optab-batches">Batches</button>
+              <button class="op-tab-btn" data-optab="optab-queue">Review AI (<span
+                  id="op-review-count">1</span>)</button>
+              <button class="op-tab-btn" data-optab="optab-compost">Compost Log</button>
+            </div>
+
+            <div class="operator-tab-viewport">
+
+              <!-- OPTAB 1: BINS FLEET STATUS -->
+              <div class="op-tab-page active-op-page" id="optab-bins">
+                <div class="fleet-grid" id="operator-fleet-list">
+                  <!-- Smart Bin Fleet Cards with real-time weight, fill, temp, lock state -->
+                </div>
+              </div>
+
+              <!-- OPTAB 2: MAINTENANCE TASKS -->
+              <div class="op-tab-page" id="optab-tasks">
+                <div class="task-filter-row">
+                  <span class="section-title">Maintenance Schedule</span>
+                </div>
+                <div class="tasks-list" id="operator-tasks-list">
+                  <!-- Swap bucket, refill bran, drain tea -->
+                </div>
+              </div>
+
+              <!-- OPTAB 3: BOKASHI BATCH TRACKER -->
+              <div class="op-tab-page" id="optab-batches">
+                <div class="batch-intro-card">
+                  <p>Bokashi pre-compost requires <strong>14 days of anaerobic fermentation</strong> sealed in
+                    food-grade buckets before curing or park bed application.</p>
+                </div>
+                <div class="batches-list" id="operator-batches-list">
+                  <!-- Fermentation progress bars -->
+                </div>
+              </div>
+
+              <!-- OPTAB 4: CONTAMINATION AI REVIEW QUEUE -->
+              <div class="op-tab-page" id="optab-queue">
+                <div class="queue-intro">
+                  <p>Deposits with low AI confidence (<85%) or resident dispute tickets awaiting operator
+                      verification.</p>
+                </div>
+                <div class="queue-list" id="operator-queue-list">
+                  <!-- Flagged deposits with approve/reject buttons -->
+                </div>
+              </div>
+
+              <!-- OPTAB 5: COMPOST RETURN LOG -->
+              <div class="op-tab-page" id="optab-compost">
+                <div class="card compost-log-form-card">
+                  <h3>Log Compost Return to Park</h3>
+                  <p>Logged batches immediately update resident community impact meters.</p>
+                  <form id="form-compost-log" onsubmit="event.preventDefault(); window.handleLogCompost();">
+                    <div class="form-group">
+                      <label>Compost Weight Returned (kg):</label>
+                      <input type="number" id="input-compost-kg" value="25" min="1" max="200" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Destination Park / Planter:</label>
+                      <select id="select-compost-loc">
+                        <option value="Central Community Planter #3">Central Community Planter #3</option>
+                        <option value="Elmina Valley North Herbal Garden">Elmina Valley North Herbal Garden</option>
+                        <option value="Block B Landscaped Fruit Trees">Block B Landscaped Fruit Trees</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Operator Signature / Note:</label>
+                      <input type="text" id="input-compost-note"
+                        value="Batch B02 cured & soil incorporated. Good aerobic structure." required>
+                    </div>
+                    <button type="submit" class="primary-cta-btn">
+                      Publish Compost Milestone to Residents
+                    </button>
+                  </form>
+                </div>
+
+                <div class="compost-history-list" id="compost-history-records">
+                  <!-- History of compost applied -->
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div> <!-- /phone-screen -->
+      </div> <!-- /phone-frame -->
+
+    </main>
+
+    <!-- ============================================== -->
+    <!-- MODALS & OVERLAYS                              -->
+    <!-- ============================================== -->
+
+    <!-- INBOX MODAL (Resident) -->
+    <div class="app-modal" id="modal-inbox">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title-row">
+            <span class="modal-icon">🔔</span>
+            <h3 class="modal-title">In-App Notification Inbox</h3>
+          </div>
+          <button class="modal-close-btn" id="btn-close-inbox">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="inbox-filters">
+            <button class="filter-pill active" data-filter="all">All</button>
+            <button class="filter-pill" data-filter="deposit">Deposits</button>
+            <button class="filter-pill" data-filter="alert">Alerts</button>
+            <button class="filter-pill" data-filter="rewards">Rewards</button>
+          </div>
+          <div class="inbox-messages-list" id="inbox-messages-container">
+            <!-- Rendered in-app notifications -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONBOARDING & SIGNUP MODAL -->
+    <div class="app-modal" id="modal-onboarding">
+      <div class="modal-card onboarding-card">
+        <div class="modal-header">
+          <div class="brand-group-mini">
+            <div class="brand-logo-icon mini">🌱</div>
+            <h3>Join AgriLoop Community</h3>
+          </div>
+          <button class="modal-close-btn" id="btn-close-onboarding">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="onboarding-steps-indicator">
+            <span class="step-dot active"></span>
+            <span class="step-dot"></span>
+            <span class="step-dot"></span>
+          </div>
+
+          <form id="onboarding-form" onsubmit="event.preventDefault(); window.handleSaveOnboarding();">
+            <div class="form-group">
+              <label>Select Sime Darby Township</label>
+              <select id="onboard-township" class="form-select">
+                <option value="City of Elmina (Elmina Valley)">City of Elmina (Elmina Valley)</option>
+                <option value="Ara Damansara">Ara Damansara</option>
+                <option value="Bandar Bukit Raja">Bandar Bukit Raja</option>
+                <option value="Subang Jaya City Centre (SJCC)">Subang Jaya City Centre (SJCC)</option>
+              </select>
+            </div>
+
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Building / Block</label>
+                <select id="onboard-block" class="form-select">
+                  <option value="Block A">Block A</option>
+                  <option value="Block B">Block B</option>
+                  <option value="Block C">Block C</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Unit Number</label>
+                <input type="text" id="onboard-unit" class="form-input" value="12-03" placeholder="e.g. 12-03" required>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Management Invite Code</label>
+              <input type="text" id="onboard-code" class="form-input" value="ELM-9921"
+                placeholder="Provided by building management" required>
+              <span class="form-help">Verified with Sime Darby resident directory.</span>
+            </div>
+
+            <div class="form-group">
+              <label>Public Nickname (Leaderboard Display)</label>
+              <input type="text" id="onboard-nickname" class="form-input" value="Norah Lee" placeholder="e.g. Norah Lee"
+                required>
+              <span class="form-help">Only your unit and nickname will be visible.</span>
+            </div>
+
+            <button type="submit" class="primary-cta-btn">
+              Save Profile & Start Composting
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- DEPOSIT HISTORY & LEDGER MODAL -->
+    <div class="app-modal" id="modal-history">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title-row">
+            <span class="modal-icon">📜</span>
+            <h3 class="modal-title">Deposit History & Ledger</h3>
+          </div>
+          <button class="modal-close-btn" id="btn-close-history">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="history-list" id="deposit-history-container">
+            <!-- Full history of weight, thumbnail, and points -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORT PROBLEM MODAL -->
+    <div class="app-modal" id="modal-report">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title-row">
+            <span class="modal-icon">🚨</span>
+            <h3 class="modal-title">Report Smart Bin Problem</h3>
+          </div>
+          <button class="modal-close-btn" id="btn-close-report">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-desc">Reports dispatch directly to the Sime Darby on-site operator task queue.</p>
+          <form id="report-form" onsubmit="event.preventDefault(); window.handleSubmitReport();">
+            <div class="form-group">
+              <label>Bin Location:</label>
+              <select id="report-bin-id" class="form-select">
+                <option value="A01">Bin A01 · Ground Foyer (Elmina Green)</option>
+                <option value="B02">Bin B02 · Central Park West</option>
+                <option value="C03">Bin C03 · Clubhouse Area</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Issue Category:</label>
+              <select id="report-category" class="form-select">
+                <option value="Bin Full / Overflowing">Bin Full / Overflowing</option>
+                <option value="Odor / Bran Depleted">Odor / Bran Needs Refill</option>
+                <option value="Latch Solenoid Jammed">Lid Latch Solenoid Jammed</option>
+                <option value="Screen / QR Offline">Screen or Camera Offline</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Description & Notes:</label>
+              <textarea id="report-notes" class="form-textarea" rows="3" placeholder="Describe the issue..."></textarea>
+            </div>
+            <button type="submit" class="primary-cta-btn">Submit Ticket to Operator</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- REDEEMED VOUCHER MODAL WITH SIGNED QR (For resident to show merchant) -->
+    <div class="app-modal" id="modal-voucher-qr">
+      <div class="modal-card voucher-pass-card">
+        <div class="modal-header">
+          <h3>Merchant Redemption Pass</h3>
+          <button class="modal-close-btn" id="btn-close-voucher-qr">&times;</button>
+        </div>
+        <div class="modal-body text-center">
+          <div class="merchant-name-tag" id="voucher-pass-merchant">Jaya Grocer</div>
+          <div class="voucher-value-big" id="voucher-pass-value">RM 5.00 OFF</div>
+          <div class="voucher-qr-display-box">
+            <div class="qr-canvas-mock">
+              <svg viewBox="0 0 100 100" class="voucher-qr-svg">
+                <rect width="100" height="100" fill="#ffffff" rx="8" />
+                <rect x="10" y="10" width="24" height="24" fill="#000000" />
+                <rect x="14" y="14" width="16" height="16" fill="#ffffff" />
+                <rect x="18" y="18" width="8" height="8" fill="#000000" />
+                <rect x="66" y="10" width="24" height="24" fill="#000000" />
+                <rect x="70" y="14" width="16" height="16" fill="#ffffff" />
+                <rect x="74" y="18" width="8" height="8" fill="#000000" />
+                <rect x="10" y="66" width="24" height="24" fill="#000000" />
+                <rect x="14" y="70" width="16" height="16" fill="#ffffff" />
+                <rect x="18" y="74" width="8" height="8" fill="#000000" />
+                <rect x="42" y="42" width="16" height="16" fill="#1bb56f" />
+              </svg>
+            </div>
+            <div class="token-code-preview" id="voucher-pass-token">TOKEN: AGR-JG-5-A93F-SEC</div>
+            <span class="qr-timer-hint">Single-use token · Expires in 7 days</span>
+          </div>
+          <p class="voucher-instruction">Present this screen to the cashier scanner at checkout.</p>
+        </div>
+    <!-- TEST QR CODE MODAL (For live physical camera scanning test) -->
+    <div class="app-modal" id="modal-test-qr">
+      <div class="modal-card" style="max-width: 400px; text-align: center;">
+        <div class="modal-header">
+          <div class="modal-title-row">
+            <span class="modal-icon">📷</span>
+            <h3 class="modal-title">Live Camera QR Test Targets</h3>
+          </div>
+          <button class="modal-close-btn" id="btn-close-test-qr">&times;</button>
+        </div>
+        <div class="modal-body text-center">
+          <p style="font-size: 0.8rem; color: #94A39B; margin-bottom: 12px;">
+            Point your device camera or phone at this QR code to trigger instant auto-unlock:
+          </p>
+          <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 14px;">
+            <button class="action-outline-btn active" id="btn-testqr-bin" style="font-size: 0.72rem; padding: 5px 10px;">
+              Smart Bin QR (Resident)
+            </button>
+            <button class="action-outline-btn" id="btn-testqr-voucher" style="font-size: 0.72rem; padding: 5px 10px;">
+              RM 5 Voucher (Merchant)
+            </button>
+          </div>
+
+          <div style="background: #ffffff; padding: 14px; border-radius: 14px; display: inline-block; margin-bottom: 12px; box-shadow: 0 0 24px rgba(34,197,94,0.3);">
+            <img id="test-qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=BIN-EV12-SMART-BIN-A01" alt="Test QR Code" width="220" height="220" style="display:block; border-radius: 4px;" />
+          </div>
+
+          <div style="font-family: monospace; font-size: 0.75rem; color: #22c55e; margin-bottom: 6px;" id="test-qr-label">
+            Payload: BIN-EV12-SMART-BIN-A01
+          </div>
+          <p style="font-size: 0.72rem; color: #94A39B; line-height: 1.3;">
+            Hold this screen up to your webcam, or open this on a phone to scan with your laptop camera.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- HARDWARE & IOT BLUEPRINT DRAWER -->
+    <div class="blueprint-drawer" id="hardware-drawer">
+      <div class="drawer-header">
+        <div class="drawer-title-row">
+          <span class="drawer-icon">🔬</span>
+          <div>
+            <h3>AgriLoop Smart Bin Hardware & Architecture</h3>
+            <span class="drawer-sub">ESP32 DevKit · ESP32-CAM · HX711 · Bokashi 20L Bucket</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" id="btn-close-hardware-drawer">&times;</button>
+      </div>
+      <div class="drawer-body">
+
+        <!-- Physical Cutaway Render Viewer -->
+        <div class="hardware-hero-render">
+          <img src="assets/smart_bin.jpg" alt="Smart Bin Hardware Render" class="hardware-img">
+          <div class="render-overlay-specs">
+            <div class="spec-pin pin-lid" title="Airtight Lid with 12V Solenoid latch & ESP32-CAM">1. Airtight Lid + Cam
+            </div>
+            <div class="spec-pin pin-screen" title="2.8 inch SPI TFT ILI9341 displaying rotating QR">2. 2.8" SPI TFT QR
+            </div>
+            <div class="spec-pin pin-bucket" title="20L Food-grade Bokashi Anaerobic Bucket">3. 20L Bokashi Vessel</div>
+            <div class="spec-pin pin-scale" title="20kg Load cell + HX711 0.01kg resolution scale">4. Load-cell Scale
+              Platform</div>
+            <div class="spec-pin pin-tap" title="Drain tap for concentrated Bokashi microbial tea">5. Bokashi Tea Spigot
+            </div>
+          </div>
+        </div>
+
+        <!-- Bill of Materials (BOM) Table -->
+        <div class="hardware-section">
+          <h4>📋 Bill of Materials (BOM) — Estimated RM 250–400</h4>
+          <table class="bom-table">
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>Specification</th>
+                <th>Role in Ecosystem</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>ESP32 DevKit WROOM</strong></td>
+                <td>Dual-core 240MHz, Wi-Fi/BLE</td>
+                <td>Main controller, MQTT over TLS, TFT & load cell logic</td>
+              </tr>
+              <tr>
+                <td><strong>ESP32-CAM (AI-Thinker)</strong></td>
+                <td>OV2640, 2MP with Flash LED</td>
+                <td>Underside lid camera for dual before/after snapshots</td>
+              </tr>
+              <tr>
+                <td><strong>20 kg Bar Load Cell + HX711</strong></td>
+                <td>24-bit ADC, target 0.01 kg res</td>
+                <td>Precise differential weight measurement (weight delta)</td>
+              </tr>
+              <tr>
+                <td><strong>2.8" SPI TFT (ILI9341)</strong></td>
+                <td>320×240 color screen</td>
+                <td>Displays dynamic rotating unlock QR & real-time status</td>
+              </tr>
+              <tr>
+                <td><strong>12V Solenoid Lock + MOSFET</strong></td>
+                <td>Fail-open power security</td>
+                <td>Electromechanical lid latch triggered via n8n MQTT</td>
+              </tr>
+              <tr>
+                <td><strong>Reed Switch + Magnet</strong></td>
+                <td>Magnetic contact sensor</td>
+                <td>Detects lid closure to initiate settling & scale reading</td>
+              </tr>
+              <tr>
+                <td><strong>Bokashi 20L Bucket & Tap</strong></td>
+                <td>Food-grade HDPE, airtight seal</td>
+                <td>Anaerobic fermentation & Bokashi liquid fertilizer drain</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- System Architecture & State Machine -->
+        <div class="hardware-section">
+          <h4>⚙️ Bin Firmware State Machine</h4>
+          <div class="state-machine-flow">
+            <div class="state-step">
+              <span class="state-name">IDLE</span>
+              <p>Lid locked. TFT shows QR with rotating nonce every 30s.</p>
+            </div>
+            <div class="state-arrow">→</div>
+            <div class="state-step">
+              <span class="state-name">UNLOCK_PENDING</span>
+              <p>MQTT unlock cmd received. Takes "before" photo, unlatches lid, 30s timer.</p>
+            </div>
+            <div class="state-arrow">→</div>
+            <div class="state-step">
+              <span class="state-name">OPEN</span>
+              <p>Lid opened. Records weight_before. Green LED glow.</p>
+            </div>
+            <div class="state-arrow">→</div>
+            <div class="state-step">
+              <span class="state-name">SETTLING</span>
+              <p>Reed switch detects closed lid. Relocks. Waits for std dev < 5g over 1.5s.</p>
+            </div>
+            <div class="state-arrow">→</div>
+            <div class="state-step">
+              <span class="state-name">CAPTURE & UPLOAD</span>
+              <p>Takes "after" photo. HTTPS POST to n8n with HMAC signature.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- n8n & Supabase Telemetry Payload Preview -->
+        <div class="hardware-section">
+          <h4>📡 MQTT & Webhook Data Payloads</h4>
+          <pre class="code-block"><code>// 1. n8n → ESP32 (MQTT: bins/A01/cmd)
+{ "cmd": "unlock", "session_id": "8f3a9d22-10f4-42b7", "ttl_s": 30 }
+
+// 2. ESP32 → n8n (HTTPS POST /deposit-result with HMAC-SHA256)
+{
+  "session_id": "8f3a9d22-10f4-42b7",
+  "bin_id": "A01",
+  "weight_before_g": 8420,
+  "weight_after_g": 9070,
+  "net_weight_g": 650,
+  "lid_open_ms": 14200,
+  "img_before": "sessions/8f3a9d22/before.jpg",
+  "img_after": "sessions/8f3a9d22/after.jpg",
+  "fw": "0.3.1"
+}</code></pre>
+        </div>
+
+      </div>
+    </div>
+
+  </div> <!-- /app-environment -->
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+
+</html>
